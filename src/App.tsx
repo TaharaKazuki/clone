@@ -29,6 +29,8 @@ const App = () => {
   return (
     <div className="App">
       <h1>People Invited to my Party</h1>
+      <List people={people} />
+      <AddToList setPeople={setPeople} people={people} />
     </div>
   )
 }
