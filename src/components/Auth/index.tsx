@@ -80,6 +80,11 @@ const Auth: FC = () => {
       .catch((error: Error) => alert(error.message))
   }
 
+  const submitHandler = async (isLogin: boolean) => {
+    const handlerFunction = isLogin ? signInEmail : signUpEmail
+    await handlerFunction().catch((e: Error) => alert(e.message))
+  }
+
   return (
     <Grid container component="main" className={classes.root}>
       <CssBaseline />
@@ -124,12 +129,12 @@ const Auth: FC = () => {
               value={password}
             />
             <Button
-              type="submit"
               fullWidth
               variant="contained"
               color="primary"
               className={classes.submit}
               startIcon={<EmailIcon />}
+              onClick={() => submitHandler(isLogin)}
             >
               {isLogin ? 'Login' : 'Resister'}
             </Button>
