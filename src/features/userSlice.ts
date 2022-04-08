@@ -3,9 +3,9 @@ import { RootState } from '../app/store'
 
 export type UserState = {
   user: {
-    uid: string | undefined
-    photoUrl: string | undefined
-    displayName: string | undefined
+    uid?: string
+    photoUrl?: string
+    displayName?: string
   }
 }
 
@@ -35,7 +35,7 @@ export const userSlice = createSlice({
   },
 })
 
-export const { login, logout } = userSlice.actions
+export const { login, logout, updateUserProfile } = userSlice.actions
 
 export const selectUser = (state: RootState) => state.user.user
 
