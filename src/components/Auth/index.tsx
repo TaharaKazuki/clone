@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { FC } from 'react'
+import type { FC, ChangeEvent } from 'react'
 import styles from './style.module.css'
 import { useDispatch } from 'react-redux'
 import { auth, provider, storage } from '../../firebase'
@@ -62,6 +62,17 @@ const useStyles = makeStyles<Theme>((theme) => ({
 
 const Auth: FC = () => {
   const classes = useStyles()
+  const [email, setEmail] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [isLogin, setIsLogin] = useState(false)
+
+  const signInEmail = async () => {
+    await auth.signInWithEmailAndPassword(email, password)
+  }
+
+  const signUpEmail = async () => {
+    await auth.createUserWithEmailAndPassword(email, password)
+  }
 
   const signInGoogle = async () => {
     await auth
@@ -79,7 +90,7 @@ const Auth: FC = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            {isLogin ? 'Login' : 'Resister'}
           </Typography>
           <form className={classes.form} noValidate>
             <TextField
@@ -91,6 +102,10 @@ const Auth: FC = () => {
               label="Email Address"
               name="email"
               autoComplete="email"
+              onChange={(
+                e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+              ) => setEmail(e.target.value)}
+              value={email}
               autoFocus
             />
             <TextField
@@ -102,7 +117,11 @@ const Auth: FC = () => {
               label="Password"
               type="password"
               id="password"
+              onChange={(
+                e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+              ) => setPassword(e.target.value)}
               autoComplete="current-password"
+              value={password}
             />
             <Button
               type="submit"
@@ -110,9 +129,23 @@ const Auth: FC = () => {
               variant="contained"
               color="primary"
               className={classes.submit}
+              startIcon={<EmailIcon />}
             >
-              Sign In
+              {isLogin ? 'Login' : 'Resister'}
             </Button>
+            <Grid container>
+              <Grid item xs>
+                <span className={styles.login_reset}>Forgot Password</span>
+              </Grid>
+              <Grid item xs>
+                <span
+                  className={styles.login_toggleMode}
+                  onClick={() => setIsLogin(!isLogin)}
+                >
+                  {isLogin ? 'Create new account ?' : 'Back to login'}
+                </span>
+              </Grid>
+            </Grid>
             <Button
               fullWidth
               variant="contained"
