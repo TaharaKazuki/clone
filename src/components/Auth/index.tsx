@@ -1,4 +1,9 @@
-import React from 'react'
+import { useState } from 'react'
+import type { FC } from 'react'
+import styles from './style.module.css'
+import { useDispatch } from 'react-redux'
+import { auth, provider, storage } from '../../firebase'
+
 import {
   Button,
   Avatar,
@@ -12,22 +17,15 @@ import {
   Grid,
   Typography,
 } from '@material-ui/core'
+
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
+import SendIcon from '@material-ui/icons/Send'
+import CameraIcon from '@material-ui/icons/Camera'
+import EmailIcon from '@material-ui/icons/Email'
+import AccountCircleIcon from '@material-ui/icons/AccountCircle'
+
 import { makeStyles } from '@material-ui/core/styles'
 import type { Theme } from '@material-ui/core/styles'
-
-const Copyright = () => {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  )
-}
 
 const useStyles = makeStyles<Theme>((theme) => ({
   root: {
@@ -62,8 +60,14 @@ const useStyles = makeStyles<Theme>((theme) => ({
   },
 }))
 
-const Auth = () => {
+const Auth: FC = () => {
   const classes = useStyles()
+
+  const signInGoogle = async () => {
+    await auth
+      .signInWithPopup(provider)
+      .catch((error: Error) => alert(error.message))
+  }
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -100,10 +104,6 @@ const Auth = () => {
               id="password"
               autoComplete="current-password"
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
@@ -113,21 +113,15 @@ const Auth = () => {
             >
               Sign In
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
-            <Box mt={5}>
-              <Copyright />
-            </Box>
+            <Button
+              fullWidth
+              variant="contained"
+              color="primary"
+              className={classes.submit}
+              onClick={signInGoogle}
+            >
+              SignIn With Google
+            </Button>
           </form>
         </div>
       </Grid>
