@@ -64,7 +64,16 @@ const Auth: FC = () => {
   const classes = useStyles()
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [username, setUsername] = useState<string>('')
+  const [avatarImage, setAvatarImage] = useState<File | null>(null)
   const [isLogin, setIsLogin] = useState(false)
+
+  const onChangeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files![0]) {
+      setAvatarImage(e.target.files![0])
+      e.target.value = ''
+    }
+  }
 
   const signInEmail = async () => {
     await auth.signInWithEmailAndPassword(email, password)
@@ -142,7 +151,7 @@ const Auth: FC = () => {
               <Grid item xs>
                 <span className={styles.login_reset}>Forgot Password</span>
               </Grid>
-              <Grid item xs>
+              <Grid item>
                 <span
                   className={styles.login_toggleMode}
                   onClick={() => setIsLogin(!isLogin)}
