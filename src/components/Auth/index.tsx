@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { FC, ChangeEvent } from 'react'
 import styles from './style.module.css'
 import { useDispatch } from 'react-redux'
+import { updateUserProfile } from '../../features/userSlice'
 import { auth, provider, storage } from '../../firebase'
 
 import {
@@ -14,6 +15,7 @@ import {
   Link,
   Paper,
   Box,
+  IconButton,
   Grid,
   Typography,
 } from '@material-ui/core'
@@ -62,6 +64,7 @@ const useStyles = makeStyles<Theme>((theme) => ({
 
 const Auth: FC = () => {
   const classes = useStyles()
+  const dispatch = useDispatch()
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [username, setUsername] = useState<string>('')
@@ -98,6 +101,13 @@ const Auth: FC = () => {
       displayName: username,
       photoURL: url,
     })
+
+    dispatch(
+      updateUserProfile({
+        displayName: username,
+        photoUrl: url,
+      })
+    )
   }
 
   const signInGoogle = async () => {
@@ -124,6 +134,45 @@ const Auth: FC = () => {
             {isLogin ? 'Login' : 'Resister'}
           </Typography>
           <form className={classes.form} noValidate>
+            {!isLogin && (
+              <>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="username"
+                  label="Username"
+                  name="username"
+                  autoComplete="username"
+                  onChange={(
+                    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+                  ) => setUsername(e.target.value)}
+                  value={username}
+                  autoFocus
+                />
+                <Box textAlign="center">
+                  <IconButton>
+                    <label>
+                      <AccountCircleIcon
+                        fontSize="large"
+                        className={
+                          avatarImage
+                            ? styles.login_addIconLoaded
+                            : styles.login_addIcon
+                        }
+                      />
+                      <input
+                        type="file"
+                        className={styles.login_hiddenIcon}
+                        onChange={onChangeImageHandler}
+                      />
+                    </label>
+                  </IconButton>
+                </Box>
+              </>
+            )}
+
             <TextField
               variant="outlined"
               margin="normal"
