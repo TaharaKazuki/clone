@@ -1,12 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { RootState } from '../app/store'
 
+type USER = {
+  uid?: string
+  displayName?: string
+  photoUrl?: string
+}
+
 export type UserState = {
-  user: {
-    uid?: string
-    photoUrl?: string
-    displayName?: string
-  }
+  user: USER
 }
 
 const initialState: UserState = {
@@ -28,9 +30,9 @@ export const userSlice = createSlice({
     logout: (state) => {
       state.user = initialState.user
     },
-    updateUserProfile: (state, action: PayloadAction<UserState>) => {
-      state.user.displayName = action.payload.user.displayName
-      state.user.photoUrl = action.payload.user.photoUrl
+    updateUserProfile: (state, action: PayloadAction<USER>) => {
+      state.user.displayName = action.payload.displayName
+      state.user.photoUrl = action.payload.photoUrl
     },
   },
 })
