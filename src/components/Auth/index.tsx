@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { FC, ChangeEvent } from 'react'
+import type { FC, ChangeEvent, MouseEvent } from 'react'
 import styles from './style.module.css'
 import { useDispatch } from 'react-redux'
 import { updateUserProfile } from '../../features/userSlice'
@@ -15,6 +15,7 @@ import {
   Link,
   Paper,
   Box,
+  Modal,
   IconButton,
   Grid,
   Typography,
@@ -28,6 +29,17 @@ import AccountCircleIcon from '@material-ui/icons/AccountCircle'
 
 import { makeStyles } from '@material-ui/core/styles'
 import type { Theme } from '@material-ui/core/styles'
+
+const getModalStyle = () => {
+  const top = 50
+  const left = 50
+
+  return {
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-${top}%, -${left}%)`,
+  }
+}
 
 const useStyles = makeStyles<Theme>((theme) => ({
   root: {
@@ -60,6 +72,15 @@ const useStyles = makeStyles<Theme>((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
+  modal: {
+    outline: 'none',
+    position: 'absolute',
+    width: 400,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    boxShadow: theme.shadows[5],
+    padding: theme.spacing(10),
+  },
 }))
 
 const Auth: FC = () => {
@@ -70,6 +91,21 @@ const Auth: FC = () => {
   const [username, setUsername] = useState<string>('')
   const [avatarImage, setAvatarImage] = useState<File | null>(null)
   const [isLogin, setIsLogin] = useState(false)
+  const [openModal, setOpenModal] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
+
+  const sendResetEmail = async (e: MouseEvent<HTMLElement>) => {
+    await auth
+      .sendPasswordResetEmail(resetEmail)
+      .then(() => {
+        setOpenModal(false)
+        setResetEmail('')
+      })
+      .catch((e) => {
+        alert(e.message)
+        setResetEmail('')
+      })
+  }
 
   const onChangeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files![0]) {
@@ -204,6 +240,11 @@ const Auth: FC = () => {
               value={password}
             />
             <Button
+              disabled={
+                isLogin
+                  ? !email || password.length < 6
+                  : !username || !email || password.length < 6 || !avatarImage
+              }
               fullWidth
               variant="contained"
               color="primary"
@@ -215,7 +256,12 @@ const Auth: FC = () => {
             </Button>
             <Grid container>
               <Grid item xs>
-                <span className={styles.login_reset}>Forgot Password</span>
+                <span
+                  onClick={() => setOpenModal(true)}
+                  className={styles.login_reset}
+                >
+                  Forgot Password
+                </span>
               </Grid>
               <Grid item>
                 <span
@@ -230,12 +276,34 @@ const Auth: FC = () => {
               fullWidth
               variant="contained"
               color="primary"
+              startIcon={<CameraIcon />}
               className={classes.submit}
               onClick={signInGoogle}
             >
               SignIn With Google
             </Button>
           </form>
+          <Modal open={openModal} onClose={() => setOpenModal(false)}>
+            <div style={getModalStyle()} className={classes.modal}>
+              <div className={styles.login_modal}>
+                <TextField
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  type="email"
+                  name="email"
+                  label="Reset E-mail"
+                  value={resetEmail}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                    setResetEmail(e.target.value)
+                  }}
+                />
+                <IconButton onClick={sendResetEmail}>
+                  <SendIcon />
+                </IconButton>
+              </div>
+            </div>
+          </Modal>
         </div>
       </Grid>
     </Grid>
